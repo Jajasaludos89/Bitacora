@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import AbstractUser, Group, Permission
+from datetime import timedelta
 
 # --- ROL DE USUARIO ---
 ROL_CHOICES = (
@@ -60,10 +61,6 @@ class Sueno(models.Model):
 
     class Meta:
         ordering = ['-fecha_creacion']
-
-from django.db import models
-from django.utils import timezone
-from datetime import timedelta
 
 class VerificacionCorreo(models.Model):
     usuario = models.ForeignKey('Usuario', on_delete=models.CASCADE)
