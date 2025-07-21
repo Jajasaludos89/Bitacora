@@ -220,6 +220,18 @@ def panel_usuario(request):
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from .models import Usuario
