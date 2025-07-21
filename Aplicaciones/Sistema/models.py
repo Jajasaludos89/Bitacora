@@ -60,3 +60,36 @@ class Sueno(models.Model):
 
     class Meta:
         ordering = ['-fecha_creacion']
+
+from django.db import models
+from django.utils import timezone
+from datetime import timedelta
+
+class VerificacionCorreo(models.Model):
+    usuario = models.ForeignKey('Usuario', on_delete=models.CASCADE)
+    codigo = models.CharField(max_length=6)
+    creado_en = models.DateTimeField(auto_now_add=True)
+    expirado = models.BooleanField(default=False)
+
+    def esta_expirado(self):
+        # El código expira a los 10 minutos
+        return self.expirado or (timezone.now() > self.creado_en + timedelta(minutes=10))
+
+    def __str__(self):
+        return f"Verificación {self.codigo} para {self.usuario.username}"
+
+# Modelo para registrar sesiones de usuario
+class RegistroSesion(models.Model):
+    usuario = models.ForeignKey('Usuario', on_delete=models.CASCADE)
+    fecha_login = models.DateTimeField(auto_now_add=True)
+    fecha_logout = models.DateTimeField(null=True, blank=True)
+    user_agent = models.CharField(max_length=255, null=True, blank=True)
+    exitoso = models.BooleanField(default=True)  # Por si quieres registrar intentos fallidos
+
+    def __str__(self):
+        estado = "cerrada" if self.fecha_logout else "abierta"
+        fecha_str = self.fecha_login.strftime('%Y-%m-%d %H:%M:%S')
+        return f"Sesión {estado} de {self.usuario.username} - {fecha_str}"
+
+    class Meta:
+        ordering = ['-fecha_login']
