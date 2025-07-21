@@ -15,4 +15,15 @@ urlpatterns = [
     path('panel/admin/', views.panel_admin, name='panel_admin'),
     path('panel/usuario/', views.panel_usuario, name='panel_usuario'),
 
+
+    
+
+    path('admin/dashboard/', views.dashboard_admin, name='dashboard_admin'),
+    path('usuario/dashboard/', views.dashboard_usuario, name='dashboard_usuario'),
+
+    # Perfil
+    path('perfil/', views.ver_perfil, name='ver_perfil'),
+    path('perfil/editar/', views.editar_perfil, name='editar_perfil'),
+    path('perfil/eliminar/', views.eliminar_perfil, name='eliminar_perfil'),
+
 ]

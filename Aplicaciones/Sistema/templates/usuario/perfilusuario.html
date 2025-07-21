@@ -1,0 +1,42 @@
+
+{% extends 'usuario/plantilla.html' %}
+{% load static %}
+
+{% block contenido %}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <title>Perfil Usuario</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+</head>
+<body>
+<div class="container mt-5" style="max-width: 600px;">
+    <h2 class="mb-4">Perfil Usuario</h2>
+
+    <div class="text-center mb-3">
+        {% if usuario.foto_perfil %}
+            <img src="{{ usuario.foto_perfil.url }}" alt="Foto de perfil" class="rounded-circle" width="150" height="150">
+        {% else %}
+            <img src="https://via.placeholder.com/150" alt="Foto de perfil" class="rounded-circle">
+        {% endif %}
+    </div>
+
+    <ul class="list-group">
+        <li class="list-group-item"><strong>Usuario:</strong> {{ usuario.username }}</li>
+        <li class="list-group-item"><strong>Nombre:</strong> {{ usuario.first_name }} {{ usuario.last_name }}</li>
+        <li class="list-group-item"><strong>Email:</strong> {{ usuario.email }}</li>
+        <li class="list-group-item"><strong>Teléfono:</strong> {{ usuario.telefono }}</li>
+        <li class="list-group-item"><strong>Dirección:</strong> {{ usuario.direccion }}</li>
+    </ul>
+
+    <div class="mt-4">
+        <a href="{% url 'editar_perfil' %}" class="btn btn-primary">Editar Perfil</a>
+        <a href="{% url 'eliminar_perfil' %}" class="btn btn-danger">Eliminar Perfil</a>
+    </div>
+</div>
+</body>
+</html>
+
+{% endblock %}

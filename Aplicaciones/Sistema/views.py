@@ -214,3 +214,120 @@ def panel_usuario(request):
         return redirect('login')
 
     return render(request, 'usuario/panel_usuario.html', {'usuario': usuario})
+
+
+
+
+
+
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .models import Usuario
+from django.conf import settings
+
+# DASHBOARDS POR ROL
+
+def dashboard_admin(request):
+    usuario_id = request.session.get('usuario_id')
+    if not usuario_id:
+        return redirect('login')
+
+    try:
+        usuario = Usuario.objects.get(id=usuario_id)
+    except Usuario.DoesNotExist:
+        return redirect('login')
+
+    if usuario.rol != 'Administrador':
+        messages.error(request, "No tienes permisos para acceder al panel de administrador.")
+        return redirect('login')
+
+    contexto = {
+        'usuario': usuario,
+        'mensaje': 'Bienvenido al panel del administrador',
+    }
+    return render(request, 'admin/panel_admin.html', contexto)
+
+
+def dashboard_usuario(request):
+    usuario_id = request.session.get('usuario_id')
+    if not usuario_id:
+        return redirect('login')
+
+    try:
+        usuario = Usuario.objects.get(id=usuario_id)
+    except Usuario.DoesNotExist:
+        return redirect('login')
+
+    if usuario.rol != 'Usuario':
+        messages.error(request, "No tienes permisos para acceder al panel de usuario.")
+        return redirect('login')
+
+    contexto = {
+        'usuario': usuario,
+        'mensaje': 'Bienvenido al panel de usuario',
+    }
+    return render(request, 'usuario/panel_usuario.html', contexto)
+
+
+# PERFIL
+
+def ver_perfil(request):
+    usuario_id = request.session.get('usuario_id')
+    if not usuario_id:
+        return redirect('login')
+
+    try:
+        usuario = Usuario.objects.get(id=usuario_id)
+    except Usuario.DoesNotExist:
+        return redirect('login')
+
+    plantilla = 'admin/perfiladmin.html' if usuario.rol == 'Administrador' else 'usuario/perfilusuario.html'
+    return render(request, plantilla, {'usuario': usuario})
+
+
+def editar_perfil(request):
+    usuario_id = request.session.get('usuario_id')
+    if not usuario_id:
+        return redirect('login')
+
+    try:
+        usuario = Usuario.objects.get(id=usuario_id)
+    except Usuario.DoesNotExist:
+        return redirect('login')
+
+    if request.method == 'POST':
+        usuario.first_name = request.POST.get('first_name')
+        usuario.last_name = request.POST.get('last_name')
+        usuario.email = request.POST.get('email')
+        usuario.telefono = request.POST.get('telefono')
+        usuario.direccion = request.POST.get('direccion')
+
+        if request.FILES.get('foto_perfil'):
+            usuario.foto_perfil = request.FILES.get('foto_perfil')
+
+        usuario.save()
+        messages.success(request, "Perfil actualizado correctamente.")
+        return redirect('ver_perfil')
+
+    plantilla = 'admin/editar_perfil_admin.html' if usuario.rol == 'Administrador' else 'usuario/editar_perfil_usuario.html'
+    return render(request, plantilla, {'usuario': usuario})
+
+
+def eliminar_perfil(request):
+    usuario_id = request.session.get('usuario_id')
+    if not usuario_id:
+        return redirect('login')
+
+    try:
+        usuario = Usuario.objects.get(id=usuario_id)
+    except Usuario.DoesNotExist:
+        return redirect('login')
+
+    if request.method == 'POST':
+        usuario.delete()
+        request.session.flush()
+        messages.success(request, "Perfil eliminado correctamente.")
+        return redirect('login')
+
+    plantilla = 'admin/eliminar_perfil_admin.html' if usuario.rol == 'Administrador' else 'usuario/eliminar_perfil_usuario.html'
+    return render(request, plantilla, {'usuario': usuario})
