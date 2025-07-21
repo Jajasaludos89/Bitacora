@@ -26,6 +26,21 @@ def cerrarSesion(request):
     return redirect('login')
 
 def iniciarSesion(request):
+    # Crear admin si no existe (solo para pruebas/desarrollo)
+    if not Usuario.objects.filter(username='admin').exists():
+        Usuario.objects.create(
+            username='admin',
+            first_name='Admin',
+            last_name='Root',
+            email='admin@ejemplo.com',
+            telefono='0000000000',
+            direccion='-',
+            rol='Administrador',
+            verificado=True,
+            bloqueado=False,
+            password=make_password('12345')
+        )
+
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
@@ -62,11 +77,11 @@ def iniciarSesion(request):
         request.session['usuario_rol'] = usuario.rol
         request.session['usuario_username'] = usuario.username
 
-        # Redirección según rol
+        # Redirección según rol (con render directo)
         if usuario.rol == 'Administrador':
-            return redirect('panel_administrador')  # Ajustar URL según proyecto
+            return render(request, 'admin/panel_admin.html', {'usuario': usuario})
         elif usuario.rol == 'Usuario':
-            return redirect('bitacora_usuario')     # Ajustar URL según proyecto
+            return render(request, 'usuario/panel_usuario.html', {'usuario': usuario})
         else:
             messages.error(request, "Rol no reconocido.")
             return render(request, 'login/login.html')
@@ -174,3 +189,31 @@ def reenviar_codigo(request, usuario_id):
 
     messages.success(request, "Nuevo código enviado.")
     return redirect('verificar_correo', usuario_id=usuario.id)
+
+
+# ------------------------ PANELES POR ROL ------------------------
+
+def panel_admin(request):
+    usuario_id = request.session.get('usuario_id')
+    if not usuario_id:
+        return redirect('login')
+
+    try:
+        usuario = Usuario.objects.get(id=usuario_id)
+    except Usuario.DoesNotExist:
+        return redirect('login')
+
+    return render(request, 'admin/panel_admin.html', {'usuario': usuario})
+
+
+def panel_usuario(request):
+    usuario_id = request.session.get('usuario_id')
+    if not usuario_id:
+        return redirect('login')
+
+    try:
+        usuario = Usuario.objects.get(id=usuario_id)
+    except Usuario.DoesNotExist:
+        return redirect('login')
+
+    return render(request, 'usuario/panel_usuario.html', {'usuario': usuario})
