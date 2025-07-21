@@ -26,4 +26,5 @@ urlpatterns = [
     path('perfil/editar/', views.editar_perfil, name='editar_perfil'),
     path('perfil/eliminar/', views.eliminar_perfil, name='eliminar_perfil'),
 
+
 ]

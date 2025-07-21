@@ -343,3 +343,155 @@ def eliminar_perfil(request):
 
     plantilla = 'admin/eliminar_perfil_admin.html' if usuario.rol == 'Administrador' else 'usuario/eliminar_perfil_usuario.html'
     return render(request, plantilla, {'usuario': usuario})
+
+
+
+
+
+
+
+
+
+
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from Aplicaciones.Sistema.models import Usuario, Emocion, Sueno
+
+# --------- VISTAS DE EMOCIONES (Solo Admin) ---------
+
+def listar_emociones(request):
+    usuario_id = request.session.get('usuario_id')
+    if not usuario_id:
+        return redirect('login')
+
+    usuario = Usuario.objects.get(id=usuario_id)
+    if usuario.rol != 'Administrador':
+        messages.error(request, "No tienes permisos para acceder a esta sección.")
+        return redirect('panel_usuario')
+
+    emociones = Emocion.objects.all()
+    return render(request, 'administrador/emociones/listarEmociones.html', {'emociones': emociones})
+
+
+def nueva_emocion(request):
+    usuario_id = request.session.get('usuario_id')
+    if not usuario_id:
+        return redirect('login')
+
+    usuario = Usuario.objects.get(id=usuario_id)
+    if usuario.rol != 'Administrador':
+        messages.error(request, "No tienes permisos para acceder a esta sección.")
+        return redirect('panel_usuario')
+
+    if request.method == 'POST':
+        nombre = request.POST['nombre']
+        descripcion = request.POST['descripcion']
+        Emocion.objects.create(nombre=nombre, descripcion=descripcion)
+        messages.success(request, "Emoción registrada correctamente.")
+        return redirect('listar_emociones')
+
+    return render(request, 'administrador/emociones/nuevaEmocion.html')
+
+
+def editar_emocion(request, emocion_id):
+    emocion = get_object_or_404(Emocion, id=emocion_id)
+
+    if request.method == 'POST':
+        emocion.nombre = request.POST['nombre']
+        emocion.descripcion = request.POST['descripcion']
+        emocion.save()
+        messages.success(request, "Emoción actualizada correctamente.")
+        return redirect('listar_emociones')
+
+    return render(request, 'administrador/emociones/editarEmocion.html', {'emocion': emocion})
+
+
+def eliminar_emocion(request, emocion_id):
+    emocion = get_object_or_404(Emocion, id=emocion_id)
+    emocion.delete()
+    messages.success(request, "Emoción eliminada correctamente.")
+    return redirect('listar_emociones')
+
+
+# --------- VISTAS DE SUEÑOS (Usuario) ---------
+
+def listar_suenos(request):
+    usuario_id = request.session.get('usuario_id')
+    if not usuario_id:
+        return redirect('login')
+
+    usuario = Usuario.objects.get(id=usuario_id)
+    suenos = Sueno.objects.filter(usuario=usuario)
+
+    return render(request, 'usuario/sueno/listarSuenos.html', {'suenos': suenos})
+
+
+def nuevo_sueno(request):
+    usuario_id = request.session.get('usuario_id')
+    if not usuario_id:
+        return redirect('login')
+
+    usuario = Usuario.objects.get(id=usuario_id)
+    emociones = Emocion.objects.all()
+
+    if request.method == 'POST':
+        titulo = request.POST['titulo']
+        descripcion = request.POST['descripcion']
+        emocion_id = request.POST.get('emocion')
+
+        emocion = Emocion.objects.get(id=emocion_id) if emocion_id else None
+
+        Sueno.objects.create(
+            usuario=usuario,
+            titulo=titulo,
+            descripcion=descripcion,
+            emocion=emocion
+        )
+        messages.success(request, "Sueño registrado correctamente.")
+        return redirect('listar_suenos')
+
+    return render(request, 'usuario/sueno/nuevoSueno.html', {'emociones': emociones})
+
+
+def editar_sueno(request, sueno_id):
+    usuario_id = request.session.get('usuario_id')
+    if not usuario_id:
+        return redirect('login')
+
+    usuario = Usuario.objects.get(id=usuario_id)
+    sueno = get_object_or_404(Sueno, id=sueno_id)
+
+    if sueno.usuario != usuario:
+        messages.error(request, "No puedes editar sueños que no te pertenecen.")
+        return redirect('listar_suenos')
+
+    emociones = Emocion.objects.all()
+
+    if request.method == 'POST':
+        sueno.titulo = request.POST['titulo']
+        sueno.descripcion = request.POST['descripcion']
+        emocion_id = request.POST.get('emocion')
+
+        sueno.emocion = Emocion.objects.get(id=emocion_id) if emocion_id else None
+        sueno.save()
+
+        messages.success(request, "Sueño actualizado correctamente.")
+        return redirect('listar_suenos')
+
+    return render(request, 'usuario/sueno/editarSueno.html', {'sueno': sueno, 'emociones': emociones})
+
+
+def eliminar_sueno(request, sueno_id):
+    usuario_id = request.session.get('usuario_id')
+    if not usuario_id:
+        return redirect('login')
+
+    sueno = get_object_or_404(Sueno, id=sueno_id)
+
+    if sueno.usuario_id != usuario_id:
+        messages.error(request, "No puedes eliminar sueños que no te pertenecen.")
+        return redirect('listar_suenos')
+
+    sueno.delete()
+    messages.success(request, "Sueño eliminado correctamente.")
+    return redirect('listar_suenos')
