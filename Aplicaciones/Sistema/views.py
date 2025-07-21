@@ -13,7 +13,6 @@ def login(request):
     return render(request, "login/login.html")
 
 def cerrarSesion(request):
-    # Marcar logout en registro de sesión si existe
     registro_sesion_id = request.session.get('registro_sesion_id')
     if registro_sesion_id:
         try:
@@ -26,7 +25,7 @@ def cerrarSesion(request):
     return redirect('login')
 
 def iniciarSesion(request):
-    # Crear admin si no existe (solo para pruebas/desarrollo)
+    # Crear admin si no existe
     if not Usuario.objects.filter(username='admin').exists():
         Usuario.objects.create(
             username='admin',
@@ -63,7 +62,7 @@ def iniciarSesion(request):
             messages.error(request, "Primero debes verificar tu correo.")
             return render(request, 'login/login.html')
 
-        # Crear registro de sesión (login exitoso)
+        # Registro de sesión
         user_agent = request.META.get('HTTP_USER_AGENT', '')
         registro_sesion = RegistroSesion.objects.create(
             usuario=usuario,
@@ -72,12 +71,11 @@ def iniciarSesion(request):
         )
         request.session['registro_sesion_id'] = registro_sesion.id
 
-        # Guardar datos en sesión
+        # Sesión
         request.session['usuario_id'] = usuario.id
         request.session['usuario_rol'] = usuario.rol
         request.session['usuario_username'] = usuario.username
 
-        # Redirección según rol (con render directo)
         if usuario.rol == 'Administrador':
             return render(request, 'admin/panel_admin.html', {'usuario': usuario})
         elif usuario.rol == 'Usuario':
@@ -101,6 +99,7 @@ def registrarUsuario(request):
         direccion = request.POST.get('direccion')
         password = request.POST.get('password')
         password2 = request.POST.get('password2')
+        foto_perfil = request.FILES.get('foto_perfil')
 
         if password != password2:
             messages.error(request, "Las contraseñas no coinciden.")
@@ -122,10 +121,10 @@ def registrarUsuario(request):
             telefono=telefono,
             direccion=direccion,
             rol='Usuario',
-            password=make_password(password)
+            password=make_password(password),
+            foto_perfil=foto_perfil
         )
 
-        # Crear y enviar código de verificación
         codigo = generar_codigo()
         VerificacionCorreo.objects.create(usuario=usuario, codigo=codigo)
 
@@ -190,7 +189,6 @@ def reenviar_codigo(request, usuario_id):
     messages.success(request, "Nuevo código enviado.")
     return redirect('verificar_correo', usuario_id=usuario.id)
 
-
 # ------------------------ PANELES POR ROL ------------------------
 
 def panel_admin(request):
@@ -204,7 +202,6 @@ def panel_admin(request):
         return redirect('login')
 
     return render(request, 'admin/panel_admin.html', {'usuario': usuario})
-
 
 def panel_usuario(request):
     usuario_id = request.session.get('usuario_id')
