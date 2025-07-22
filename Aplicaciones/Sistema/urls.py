@@ -44,4 +44,8 @@ urlpatterns = [
     # ... otras rutas
     path('administrador/emociones/resumen-emociones/', views.dashboard_suenos_por_emocion, name='dashboard_suenos'),
 
+
+
+
+    path('administrador/calendario/', views.calendario_suenos, name='calendario_suenos'),
 ]

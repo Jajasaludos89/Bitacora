@@ -1,0 +1,70 @@
+{% extends 'admin/plantilla.html' %}
+{% load static %}
+{% block contenido %}
+
+<!-- FullCalendar CSS -->
+<link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.18/index.global.min.css' rel='stylesheet' />
+
+<div class="container-fluid mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <h2 class="text-center mb-3">Calendario de Sueños Registrados</h2>
+            <div class="d-flex justify-content-end mb-3">
+                <!-- Opcional: Botones adicionales -->
+            </div>
+            <div id='calendar'></div>
+        </div>
+    </div>
+</div>
+
+<!-- Estilos personalizados -->
+<style>
+    #calendar {
+        background-color: white;
+        padding: 15px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .fc-event {
+        color: white !important;
+        background-color: #28a745 !important;
+        border: none !important;
+        padding: 5px;
+        border-radius: 4px;
+    }
+
+    .fc .fc-toolbar-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+</style>
+
+<!-- FullCalendar JS -->
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.18/index.global.min.js'></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var calendarEl = document.getElementById('calendar');
+    var suenos = JSON.parse('{{ eventos_json|escapejs }}');
+
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        locale: 'es',
+        selectable: true,
+        editable: false,
+        height: 'auto',
+        buttonText: {
+            today: 'Calendario'
+        },
+        events: suenos,
+        eventClick: function(info) {
+            var id = info.event.id;
+            window.location.href = '/verSueno/' + id + '/'; // Ajusta esta ruta si deseas ver el sueño
+        }
+    });
+
+    calendar.render();
+});
+</script>
+
+{% endblock %}

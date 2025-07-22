@@ -581,3 +581,40 @@ def dashboard_suenos_por_emocion(request):
         'cantidades': cantidades,
     }
     return render(request, 'admin/emociones/dashboard_suenos.html', contexto)
+
+
+
+
+
+
+
+import json
+from django.shortcuts import render, redirect
+from .models import Sueno, Usuario
+from django.contrib import messages
+
+def calendario_suenos(request):
+    usuario_id = request.session.get('usuario_id')
+    if not usuario_id:
+        return redirect('login')
+
+    admin = Usuario.objects.get(id=usuario_id)
+    if admin.rol != 'Administrador':
+        messages.error(request, "No tienes permisos para esta sección.")
+        return redirect('login')
+
+    suenos = Sueno.objects.select_related('usuario').all()
+    eventos = []
+
+    for sueno in suenos:
+        eventos.append({
+            'id': sueno.id,
+            'title': sueno.usuario.username,  # Solo el username
+            'start': sueno.fecha_creacion.isoformat()
+        })
+
+    return render(request, 'admin/calendario/calendario.html', {
+        'usuario': admin,
+        'eventos_json': json.dumps(eventos)
+    })
+
