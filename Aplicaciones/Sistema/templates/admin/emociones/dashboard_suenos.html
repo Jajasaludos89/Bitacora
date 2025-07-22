@@ -1,0 +1,50 @@
+<!-- administrador/dashboard_suenos.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <title>Dashboard Sueños por Emoción</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>Dashboard de Sueños por Emoción</h1>
+    <p>Usuario: {{ usuario.username }} ({{ usuario.rol }})</p>
+
+    <canvas id="graficoSuenos" width="600" height="400"></canvas>
+
+    <script>
+        const etiquetas = {{ etiquetas|safe }};
+        const cantidades = {{ cantidades|safe }};
+
+        const ctx = document.getElementById('graficoSuenos').getContext('2d');
+        const graficoSuenos = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: etiquetas,
+                datasets: [{
+                    label: 'Cantidad de Sueños',
+                    data: cantidades,
+                    backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        precision: 0
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top'
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

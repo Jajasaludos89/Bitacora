@@ -38,4 +38,10 @@ urlpatterns = [
     path('usuario/suenos/editar/<int:sueno_id>/', views.editar_sueno, name='editar_sueno'),
     path('usuario/suenos/eliminar/<int:sueno_id>/', views.eliminar_sueno, name='eliminar_sueno'),
 
+
+
+
+    # ... otras rutas
+    path('administrador/emociones/resumen-emociones/', views.dashboard_suenos_por_emocion, name='dashboard_suenos'),
+
 ]

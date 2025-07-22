@@ -539,3 +539,45 @@ def eliminar_sueno(request, sueno_id):
     sueno.delete()
     messages.success(request, "Sueño eliminado correctamente.")
     return redirect('listar_suenos')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+from django.shortcuts import render, redirect
+from django.db.models import Count
+from .models import Usuario, Sueno, Emocion
+from django.contrib import messages
+
+def dashboard_suenos_por_emocion(request):
+    usuario_id = request.session.get('usuario_id')
+    if not usuario_id:
+        return redirect('login')
+
+    usuario = Usuario.objects.get(id=usuario_id)
+    if usuario.rol != 'Administrador':
+        messages.error(request, "No tienes permisos para esta sección.")
+        return redirect('login')
+
+    # Conteo de sueños agrupados por emocion
+    datos = Sueno.objects.values('emocion__nombre').annotate(total=Count('id')).order_by('emocion__nombre')
+
+    # Preparar listas para labels y datos
+    etiquetas = [item['emocion__nombre'] if item['emocion__nombre'] else 'Sin emoción' for item in datos]
+    cantidades = [item['total'] for item in datos]
+
+    contexto = {
+        'usuario': usuario,
+        'etiquetas': etiquetas,
+        'cantidades': cantidades,
+    }
+    return render(request, 'admin/emociones/dashboard_suenos.html', contexto)

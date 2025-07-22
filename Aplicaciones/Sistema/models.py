@@ -37,13 +37,14 @@ class Usuario(AbstractUser):
     def __str__(self):
         return f"{self.username} ({self.rol})"
 
-# --- EMOCIONES DOMINANTES ---
 class Emocion(models.Model):
-    nombre = models.CharField(max_length=50, unique=True)
+    nombre = models.CharField(max_length=50)
     descripcion = models.TextField(null=True, blank=True)
+    valor = models.IntegerField(default=0)
 
     def __str__(self):
-        return self.nombre
+        return f"{self.nombre} - {self.valor}"
+
 
     class Meta:
         ordering = ['nombre']
