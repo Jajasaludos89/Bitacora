@@ -8,19 +8,17 @@
     <h2 class="text-center text-success">Panel del Usuario</h2>
     <hr>
 
-    {% if messages %}
-        {% for message in messages %}
-            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
-        {% endfor %}
-    {% endif %}
-
     <div class="row justify-content-center mt-4">
         <div class="col-md-6 text-center">
-            {% if request.user.foto_perfil %}
-                <img src="{{ request.user.foto_perfil.url }}" alt="Foto de perfil" class="img-thumbnail mb-3" width="150">
-            {% else %}
-                <img src="{% static 'img/default_user.png' %}" alt="Foto por defecto" class="img-thumbnail mb-3" width="150">
-            {% endif %}
+            
+            
+            <div class="text-center mb-3">
+                {% if usuario.foto_perfil %}
+                    <img src="{{ usuario.foto_perfil.url }}" alt="Foto de perfil" class="rounded-circle" width="150" height="150">
+                {% else %}
+                    <img src="https://via.placeholder.com/150" alt="Foto de perfil" class="rounded-circle">
+                {% endif %}
+            </div>
             
             <p class="lead">Hola <strong>{{ request.user.first_name }} {{ request.user.last_name }}</strong>, bienvenido a tu panel.</p>
             <p>Puedes visualizar tus datos, registros y otros recursos permitidos.</p>

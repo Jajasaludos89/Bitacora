@@ -15,14 +15,6 @@
 <div class="container mt-5" style="max-width: 600px;">
     <h2 class="mb-4">Editar Perfil Usuario</h2>
 
-    {% if messages %}
-    <div>
-        {% for message in messages %}
-            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
-        {% endfor %}
-    </div>
-    {% endif %}
-
     <form method="post" enctype="multipart/form-data" action="{% url 'editar_perfil' %}">
         {% csrf_token %}
         <div class="mb-3">
