@@ -2,18 +2,27 @@
 {% load static %}
 
 {% block contenido %}
+<br><br><br>
+
 <div class="container mt-5">
-    <h2>Listado de Emociones</h2>
-    <a href="{% url 'nueva_emocion' %}" class="btn btn-primary mb-3">Nueva Emoción</a>
+    <h1 class="text-center text-primary">Listado de Emociones</h1>
+    <hr>
+
+    <div class="text-end mb-3">
+        <a href="{% url 'nueva_emocion' %}" class="btn btn-success">Nueva Emoción</a>
+    </div>
 
     {% if messages %}
         {% for message in messages %}
-            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+            </div>
         {% endfor %}
     {% endif %}
 
-    <table class="table table-bordered table-striped">
-        <thead>
+    <table class="table table-bordered table-striped table-hover" id="tbl_emocion">
+        <thead class="table-primary">
             <tr>
                 <th>Nombre</th>
                 <th>Descripción</th>
@@ -24,16 +33,56 @@
             {% for emocion in emociones %}
             <tr>
                 <td>{{ emocion.nombre }}</td>
-                <td>{{ emocion.descripcion }}</td>
+                <td>{{ emocion.descripcion|default:"—" }}</td>
                 <td>
                     <a href="{% url 'editar_emocion' emocion.id %}" class="btn btn-warning btn-sm">Editar</a>
-                    <a href="{% url 'eliminar_emocion' emocion.id %}" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de eliminar esta emoción?');">Eliminar</a>
+
+                    <form method="post" action="{% url 'eliminar_emocion' emocion.id %}" class="d-inline eliminar-form">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                    </form>
                 </td>
             </tr>
             {% empty %}
-            <tr><td colspan="3">No hay emociones registradas.</td></tr>
+            <tr>
+                <td colspan="3" class="text-center">No hay emociones registradas.</td>
+            </tr>
             {% endfor %}
         </tbody>
     </table>
 </div>
+
+<script>
+document.querySelectorAll('.eliminar-form').forEach(form => {
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        Swal.fire({
+            title: 'Esta acción esta relacionada a la tabla Usuarios',
+            text: "¿Estás seguro de que deseas eliminar esta emoción?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        });
+    });
+});
+</script>
+
+<script>
+  $('#tbl_emocion').DataTable({
+      dom: 'Bfrtip',
+      buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
+      language: {
+          url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json'
+      }
+  });
+</script>
+
+<br><br><br>
 {% endblock %}
