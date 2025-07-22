@@ -1,0 +1,43 @@
+{% extends 'usuario/plantilla.html' %}
+{% load static %}
+
+{% block contenido %}
+<div class="container mt-5">
+    <h2>Mis Sueños</h2>
+    <a href="{% url 'nuevo_sueno' %}" class="btn btn-primary mb-3">Registrar Nuevo Sueño</a>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Título</th>
+                <th>Descripción</th>
+                <th>Emoción</th>
+                <th>Fecha</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for sueno in suenos %}
+            <tr>
+                <td>{{ sueno.titulo }}</td>
+                <td>{{ sueno.descripcion }}</td>
+                <td>{{ sueno.emocion.nombre }}</td>
+                <td>{{ sueno.fecha_creacion|date:"d/m/Y H:i" }}</td>
+                <td>
+                    <a href="{% url 'editar_sueno' sueno.id %}" class="btn btn-warning btn-sm">Editar</a>
+                    <a href="{% url 'eliminar_sueno' sueno.id %}" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de eliminar este sueño?');">Eliminar</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5">No has registrado sueños aún.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

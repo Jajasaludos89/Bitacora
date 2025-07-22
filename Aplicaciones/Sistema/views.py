@@ -356,21 +356,27 @@ def eliminar_perfil(request):
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from Aplicaciones.Sistema.models import Usuario, Emocion, Sueno
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from .models import Usuario, Emocion
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from .models import Usuario, Emocion
 
-# --------- VISTAS DE EMOCIONES (Solo Admin) ---------
+# ---------- VISTAS PARA EMOCIONES (Solo Admin) ------------
 
 def listar_emociones(request):
     usuario_id = request.session.get('usuario_id')
     if not usuario_id:
         return redirect('login')
 
-    usuario = Usuario.objects.get(id=usuario_id)
-    if usuario.rol != 'Administrador':
+    usuario = Usuario.objects.filter(id=usuario_id).first()
+    if not usuario or usuario.rol != 'Administrador':
         messages.error(request, "No tienes permisos para acceder a esta sección.")
         return redirect('panel_usuario')
 
     emociones = Emocion.objects.all()
-    return render(request, 'administrador/emociones/listarEmociones.html', {'emociones': emociones})
+    return render(request, 'admin/emociones/listarEmociones.html', {'emociones': emociones})
 
 
 def nueva_emocion(request):
@@ -378,39 +384,77 @@ def nueva_emocion(request):
     if not usuario_id:
         return redirect('login')
 
-    usuario = Usuario.objects.get(id=usuario_id)
-    if usuario.rol != 'Administrador':
+    usuario = Usuario.objects.filter(id=usuario_id).first()
+    if not usuario or usuario.rol != 'Administrador':
         messages.error(request, "No tienes permisos para acceder a esta sección.")
         return redirect('panel_usuario')
 
     if request.method == 'POST':
-        nombre = request.POST['nombre']
-        descripcion = request.POST['descripcion']
+        nombre = request.POST.get('nombre', '').strip()
+        descripcion = request.POST.get('descripcion', '').strip()
+
+        if not nombre:
+            messages.error(request, "El nombre es obligatorio.")
+            return render(request, 'admin/emociones/nuevaEmocion.html')
+
+        if Emocion.objects.filter(nombre__iexact=nombre).exists():
+            messages.warning(request, "Esa emoción ya existe.")
+            return render(request, 'administrador/emociones/nuevaEmocion.html')
+
         Emocion.objects.create(nombre=nombre, descripcion=descripcion)
         messages.success(request, "Emoción registrada correctamente.")
         return redirect('listar_emociones')
 
-    return render(request, 'administrador/emociones/nuevaEmocion.html')
+    return render(request, 'admin/emociones/nuevaEmocion.html')
 
 
 def editar_emocion(request, emocion_id):
+    usuario_id = request.session.get('usuario_id')
+    if not usuario_id:
+        return redirect('login')
+
+    usuario = Usuario.objects.filter(id=usuario_id).first()
+    if not usuario or usuario.rol != 'Administrador':
+        messages.error(request, "No tienes permisos para acceder a esta sección.")
+        return redirect('panel_usuario')
+
     emocion = get_object_or_404(Emocion, id=emocion_id)
 
     if request.method == 'POST':
-        emocion.nombre = request.POST['nombre']
-        emocion.descripcion = request.POST['descripcion']
+        nombre = request.POST.get('nombre', '').strip()
+        descripcion = request.POST.get('descripcion', '').strip()
+
+        if not nombre:
+            messages.error(request, "El nombre es obligatorio.")
+            return render(request, 'admin/emociones/editarEmocion.html', {'emocion': emocion})
+
+        emocion.nombre = nombre
+        emocion.descripcion = descripcion
         emocion.save()
+
         messages.success(request, "Emoción actualizada correctamente.")
         return redirect('listar_emociones')
 
-    return render(request, 'administrador/emociones/editarEmocion.html', {'emocion': emocion})
+    return render(request, 'admin/emociones/editarEmocion.html', {'emocion': emocion})
 
 
 def eliminar_emocion(request, emocion_id):
+    usuario_id = request.session.get('usuario_id')
+    if not usuario_id:
+        return redirect('login')
+
+    usuario = Usuario.objects.filter(id=usuario_id).first()
+    if not usuario or usuario.rol != 'Administrador':
+        messages.error(request, "No tienes permisos para acceder a esta sección.")
+        return redirect('panel_usuario')
+
     emocion = get_object_or_404(Emocion, id=emocion_id)
     emocion.delete()
     messages.success(request, "Emoción eliminada correctamente.")
     return redirect('listar_emociones')
+
+
+
 
 
 # --------- VISTAS DE SUEÑOS (Usuario) ---------

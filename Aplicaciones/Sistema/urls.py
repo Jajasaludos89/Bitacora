@@ -27,11 +27,10 @@ urlpatterns = [
     path('perfil/eliminar/', views.eliminar_perfil, name='eliminar_perfil'),
 
 
-    # URLs para emociones (ADMIN)
-    path('admin/emociones/', views.listar_emociones, name='listar_emociones'),
-    path('admin/emociones/nueva/', views.nueva_emocion, name='nueva_emocion'),
-    path('admin/emociones/editar/<int:emocion_id>/', views.editar_emocion, name='editar_emocion'),
-    path('admin/emociones/eliminar/<int:emocion_id>/', views.eliminar_emocion, name='eliminar_emocion'),
+    path('administrador/emociones/', views.listar_emociones, name='listar_emociones'),
+    path('administrador/emociones/nueva/', views.nueva_emocion, name='nueva_emocion'),
+    path('administrador/emociones/editar/<int:emocion_id>/', views.editar_emocion, name='editar_emocion'),
+    path('administrador/emociones/eliminar/<int:emocion_id>/', views.eliminar_emocion, name='eliminar_emocion'),
 
     # URLs para sueños (USUARIO)
     path('usuario/suenos/', views.listar_suenos, name='listar_suenos'),
