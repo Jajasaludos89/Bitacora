@@ -3,17 +3,22 @@
 
 {% block contenido %}
 <div class="container mt-5">
-    <h2>Mis Sueños</h2>
-    <a href="{% url 'nuevo_sueno' %}" class="btn btn-primary mb-3">Registrar Nuevo Sueño</a>
+    <h2 class="text-center text-primary">Mis Sueños</h2>
+    <div class="text-end mb-3">
+        <a href="{% url 'nuevo_sueno' %}" class="btn btn-success">Registrar Nuevo Sueño</a>
+    </div>
 
     {% if messages %}
         {% for message in messages %}
-            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+            </div>
         {% endfor %}
     {% endif %}
 
-    <table class="table table-bordered table-striped">
-        <thead>
+    <table class="table table-bordered table-striped table-hover" id="tbl_suenos">
+        <thead class="table-primary">
             <tr>
                 <th>Título</th>
                 <th>Descripción</th>
@@ -31,13 +36,51 @@
                 <td>{{ sueno.fecha_creacion|date:"d/m/Y H:i" }}</td>
                 <td>
                     <a href="{% url 'editar_sueno' sueno.id %}" class="btn btn-warning btn-sm">Editar</a>
-                    <a href="{% url 'eliminar_sueno' sueno.id %}" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de eliminar este sueño?');">Eliminar</a>
+
+                    <form method="post" action="{% url 'eliminar_sueno' sueno.id %}" class="d-inline eliminar-form">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                    </form>
                 </td>
             </tr>
             {% empty %}
-            <tr><td colspan="5">No has registrado sueños aún.</td></tr>
+            <tr>
+                <td colspan="5" class="text-center">No has registrado sueños aún.</td>
+            </tr>
             {% endfor %}
         </tbody>
     </table>
 </div>
+
+<script>
+document.querySelectorAll('.eliminar-form').forEach(form => {
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        Swal.fire({
+            title: 'Esta acción eliminará el registro',
+            text: "¿Estás seguro de que deseas eliminar este sueño?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        });
+    });
+});
+</script>
+
+<script>
+  $('#tbl_suenos').DataTable({
+      dom: 'Bfrtip',
+      buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
+      language: {
+          url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json'
+      }
+  });
+</script>
 {% endblock %}
