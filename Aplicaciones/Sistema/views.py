@@ -1,11 +1,17 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.hashers import check_password, make_password
-from .models import Usuario, RegistroSesion, VerificacionCorreo
+from .models import Usuario, RegistroSesion, VerificacionCorreo, Emocion, Sueno
+
+from Aplicaciones.Sistema.models import Usuario, Emocion, Sueno
+
+from django.db.models import Count
 from django.utils import timezone
 from django.conf import settings
 from django.core.mail import send_mail
 import random
+import json
+
 
 # ------------------------ LOGIN ------------------------
 
@@ -220,24 +226,7 @@ def panel_usuario(request):
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from .models import Usuario
-from django.conf import settings
-
-# DASHBOARDS POR ROL
+# ------------------------------ # DASHBOARDS POR ROL ---------------------------------
 
 def dashboard_admin(request):
     usuario_id = request.session.get('usuario_id')
@@ -281,7 +270,7 @@ def dashboard_usuario(request):
     return render(request, 'usuario/panel_usuario.html', contexto)
 
 
-# PERFIL
+# -------------------- Perfil ------------------------
 
 def ver_perfil(request):
     usuario_id = request.session.get('usuario_id')
@@ -346,22 +335,6 @@ def eliminar_perfil(request):
 
 
 
-
-
-
-
-
-
-
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib import messages
-from Aplicaciones.Sistema.models import Usuario, Emocion, Sueno
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib import messages
-from .models import Usuario, Emocion
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib import messages
-from .models import Usuario, Emocion
 
 # ---------- VISTAS PARA EMOCIONES (Solo Admin) ------------
 
@@ -544,19 +517,7 @@ def eliminar_sueno(request, sueno_id):
 
 
 
-
-
-
-
-
-
-
-
-
-from django.shortcuts import render, redirect
-from django.db.models import Count
-from .models import Usuario, Sueno, Emocion
-from django.contrib import messages
+# --------------------------- Chart js -------------------------------
 
 def dashboard_suenos_por_emocion(request):
     usuario_id = request.session.get('usuario_id')
@@ -585,12 +546,7 @@ def dashboard_suenos_por_emocion(request):
 
 
 
-
-
-from django.shortcuts import render, redirect, get_object_or_404
-from .models import Sueno, Usuario
-from django.contrib import messages
-import json
+# ------------------------ Calendario ----------------------
 
 def calendario_suenos(request):
     usuario_id = request.session.get('usuario_id')
