@@ -2,6 +2,9 @@
 {% load static %}
 
 {% block contenido %}
+<br><br><br>
+
+
 <div class="container mt-5">
     <h2>Registrar Nuevo Sueño</h2>
 
@@ -11,7 +14,7 @@
         {% endfor %}
     {% endif %}
 
-    <form method="post" action="{% url 'nuevo_sueno' %}">
+    <form method="post" action="{% url 'nuevo_sueno' %}" id="frm_nuevo_sueno">
         {% csrf_token %}
         <div class="mb-3">
             <label for="titulo" class="form-label">Título</label>
@@ -37,4 +40,32 @@
         <a href="{% url 'listar_suenos' %}" class="btn btn-secondary">Cancelar</a>
     </form>
 </div>
+
+<!-- Validación con jQuery Validate -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
+<script>
+$(document).ready(function () {
+    $('#frm_nuevo_sueno').validate({
+        rules: {
+            titulo: { required: true },
+            descripcion: { required: true },
+            emocion: { required: true }
+        },
+        messages: {
+            titulo: { required: "El título es obligatorio." },
+            descripcion: { required: "La descripción es obligatoria." },
+            emocion: { required: "Selecciona una emoción." }
+        },
+        errorClass: 'text-danger',
+        errorElement: 'div',
+        highlight: function (element) {
+            $(element).addClass('is-invalid');
+        },
+        unhighlight: function (element) {
+            $(element).removeClass('is-invalid');
+        }
+    });
+});
+</script>
 {% endblock %}

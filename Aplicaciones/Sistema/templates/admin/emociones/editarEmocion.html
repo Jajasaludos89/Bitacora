@@ -2,27 +2,62 @@
 {% load static %}
 
 {% block contenido %}
+<br><br><br>
+
 <div class="container mt-5">
-    <h2>Editar Emoción</h2>
+    <h2 class="text-center text-primary">Editar Emoción</h2>
+    <hr>
 
     {% if messages %}
         {% for message in messages %}
-            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+            </div>
         {% endfor %}
     {% endif %}
 
-    <form method="post" action="{% url 'editar_emocion' emocion.id %}">
+    <form method="post" action="{% url 'editar_emocion' emocion.id %}" id="frm_editar_emocion" class="mx-auto" style="max-width: 600px;">
         {% csrf_token %}
         <div class="mb-3">
             <label for="nombre" class="form-label">Nombre</label>
-            <input type="text" id="nombre" name="nombre" class="form-control" value="{{ emocion.nombre }}" required>
+            <input type="text" id="nombre" name="nombre" class="form-control" value="{{ emocion.nombre }}" placeholder="Ej. Tristeza" />
         </div>
         <div class="mb-3">
             <label for="descripcion" class="form-label">Descripción</label>
-            <textarea id="descripcion" name="descripcion" class="form-control" rows="3">{{ emocion.descripcion }}</textarea>
+            <textarea id="descripcion" name="descripcion" class="form-control" rows="3" placeholder="Describe brevemente la emoción...">{{ emocion.descripcion }}</textarea>
         </div>
         <button type="submit" class="btn btn-primary">Actualizar</button>
-        <a href="{% url 'listar_emociones' %}" class="btn btn-secondary">Cancelar</a>
+        <a href="{% url 'listar_emociones' %}" class="btn btn-secondary ms-2">Cancelar</a>
     </form>
 </div>
+
+<script>
+  $("#frm_editar_emocion").validate({
+      rules: {
+          nombre: {
+              required: true,
+              minlength: 3,
+              maxlength: 50
+          },
+          descripcion: {
+              required: true,
+              minlength: 10,
+              maxlength: 500
+          }
+      },
+      messages: {
+          nombre: {
+              required: "Por favor ingresa el nombre de la emoción",
+              minlength: "Debe tener al menos 3 caracteres",
+              maxlength: "No puede exceder los 50 caracteres"
+          },
+          descripcion: {
+              required: "Por favor proporciona una descripción",
+              minlength: "Debe tener al menos 10 caracteres",
+              maxlength: "No puede exceder los 500 caracteres"
+          }
+      }
+  });
+</script>
 {% endblock %}
