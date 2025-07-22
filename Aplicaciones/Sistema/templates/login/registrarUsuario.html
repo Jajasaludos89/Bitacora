@@ -108,5 +108,118 @@
         });
     });
 </script>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
+<script>
+$(document).ready(function () {
+    // Inicialización fileinput (ya la tienes)
+    $("#foto").fileinput({
+        language: "es",
+        allowedFileExtensions: ["jpg", "jpeg", "png"],
+        dropZoneEnabled: true,
+        showUpload: false,
+        showRemove: true,
+        browseLabel: "Seleccionar Imagen",
+        dropZoneTitle: "Arrastra tu imagen aquí",
+        maxFileSize: 2048 // en KB = 2MB
+    });
+
+    // Validación con jQuery Validate
+    $("form").validate({
+        rules: {
+            username: {
+                required: true,
+                minlength: 3
+            },
+            first_name: {
+                required: true,
+                minlength: 2
+            },
+            last_name: {
+                required: true,
+                minlength: 2
+            },
+            email: {
+                required: true,
+                email: true
+            },
+            telefono: {
+                required: true,
+                digits: true,
+                minlength: 7,
+                maxlength: 10
+            },
+            direccion: {
+                required: true,
+                minlength: 5
+            },
+            foto: {
+                required: true,
+                extension: "jpg|jpeg|png",
+                filesize: 2 * 1024 * 1024 // 2MB en bytes
+            },
+            password: {
+                required: true,
+                minlength: 6
+            },
+            password2: {
+                required: true,
+                equalTo: "#password"
+            }
+        },
+        messages: {
+            username: {
+                required: "Por favor ingresa un usuario",
+                minlength: "El usuario debe tener al menos 3 caracteres"
+            },
+            first_name: {
+                required: "Por favor ingresa tu nombre",
+                minlength: "El nombre debe tener al menos 2 caracteres"
+            },
+            last_name: {
+                required: "Por favor ingresa tu apellido",
+                minlength: "El apellido debe tener al menos 2 caracteres"
+            },
+            email: {
+                required: "Por favor ingresa un correo electrónico",
+                email: "Por favor ingresa un correo válido"
+            },
+            telefono: {
+                required: "Por favor ingresa un teléfono",
+                digits: "Sólo se permiten números",
+                minlength: "El teléfono debe tener al menos 7 dígitos",
+                maxlength: "El teléfono no puede tener más de 10 dígitos"
+            },
+            direccion: {
+                required: "Por favor ingresa una dirección",
+                minlength: "La dirección debe tener al menos 5 caracteres"
+            },
+            foto: {
+                required: "Por favor selecciona una imagen",
+                extension: "Sólo se permiten archivos jpg, jpeg o png",
+                filesize: "El archivo no debe superar los 2MB"
+            },
+            password: {
+                required: "Por favor ingresa una contraseña",
+                minlength: "La contraseña debe tener al menos 6 caracteres"
+            },
+            password2: {
+                required: "Por favor confirma la contraseña",
+                equalTo: "Las contraseñas no coinciden"
+            }
+        }
+    });
+
+    // Validación custom para tamaño de archivo
+    $.validator.addMethod('filesize', function (value, element, param) {
+        if (element.files.length == 0) {
+            return false;
+        }
+        return element.files[0].size <= param;
+    }, 'El archivo es demasiado grande.');
+
+});
+</script>
+
 </body>
 </html>
