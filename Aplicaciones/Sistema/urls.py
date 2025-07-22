@@ -2,6 +2,10 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
+
+
+    # LOGIN
+
     path('', views.login, name='login'),
     path('iniciar-sesion/', views.iniciarSesion, name='iniciar_sesion'),
     path('cerrar-sesion/', views.cerrarSesion, name='cerrar_sesion'),
@@ -12,11 +16,14 @@ urlpatterns = [
     path('reenviar-codigo/<int:usuario_id>/', views.reenviar_codigo, name='reenviar_codigo'),
 
 
+    # Paneles principales
+
     path('panel/admin/', views.panel_admin, name='panel_admin'),
     path('panel/usuario/', views.panel_usuario, name='panel_usuario'),
 
 
     
+    # Dashboard
 
     path('admin/dashboard/', views.dashboard_admin, name='dashboard_admin'),
     path('usuario/dashboard/', views.dashboard_usuario, name='dashboard_usuario'),
@@ -26,6 +33,7 @@ urlpatterns = [
     path('perfil/editar/', views.editar_perfil, name='editar_perfil'),
     path('perfil/eliminar/', views.eliminar_perfil, name='eliminar_perfil'),
 
+    # URLs para emociones(ADMIN)
 
     path('administrador/emociones/', views.listar_emociones, name='listar_emociones'),
     path('administrador/emociones/nueva/', views.nueva_emocion, name='nueva_emocion'),
@@ -39,14 +47,11 @@ urlpatterns = [
     path('usuario/suenos/eliminar/<int:sueno_id>/', views.eliminar_sueno, name='eliminar_sueno'),
 
 
-
-
-    # ... otras rutas
+    # CHART.JS
     path('administrador/emociones/resumen-emociones/', views.dashboard_suenos_por_emocion, name='dashboard_suenos'),
 
 
-
-
+    # Calendario
     path('administrador/calendario/', views.calendario_suenos, name='calendario_suenos'),
     path('verSueno/<int:id>/', views.verSueno, name='verSueno')
 
