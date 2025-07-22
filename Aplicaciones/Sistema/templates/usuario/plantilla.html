@@ -130,8 +130,9 @@
             </li>
 
             <li class="nav-item">
-                <a href="">
+                <a href="{% url 'panel_usuario' %}">
                 <i class="fas fa-home"></i>
+                
                 <p>Inicio</p>
                 </a>
             </li>
@@ -142,41 +143,6 @@
                 <p>Lista de Sueños</p>
                 </a>
             </li>
-
-            <li class="nav-item">
-                <a href="">
-                <i class="fas fa-file-signature"></i>
-                <p>Lista de contratos</p>
-                </a>
-            </li>
-
-            <li class="nav-item">
-                <a href="">
-                <i class="fas fa-money-check-alt"></i>
-                <p>Lista de pagos</p>
-                </a>
-            </li>
-
-            <li class="nav-item">
-                <a href="">
-                <i class="fas fa-star"></i>
-                <p>Reseñas</p>
-                </a>
-            </li>
-
-            <li class="nav-item">
-                <a href="">
-                <i class="fas fa-envelope"></i>
-                <p>Mensajes</p>
-                </a>
-            </li>
-
-            <li class="nav-item">
-              <a href="">
-                  <i class="fas fa-file-contract"></i>
-                  <p>Términos y Condiciones</p>
-              </a>
-          </li>
             </ul>
         </div>
         </div>
@@ -236,7 +202,7 @@
                 <a href="{% url 'ver_perfil' %}" class="btn btn-light btn-sm me-2">
                     <i class="bi bi-person-circle me-1"></i> Ver mi perfil
                 </a>
-                <a href="" class="btn btn-danger btn-sm">
+                <a href="{% url 'iniciar_sesion' %}" class="btn btn-danger btn-sm">
                     <i class="bi bi-box-arrow-right me-1"></i> Cerrar sesión
                 </a>
 
