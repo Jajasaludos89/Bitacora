@@ -48,4 +48,6 @@ urlpatterns = [
 
 
     path('administrador/calendario/', views.calendario_suenos, name='calendario_suenos'),
+    path('verSueno/<int:id>/', views.verSueno, name='verSueno')
+
 ]

@@ -587,11 +587,10 @@ def dashboard_suenos_por_emocion(request):
 
 
 
-
-import json
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import Sueno, Usuario
 from django.contrib import messages
+import json
 
 def calendario_suenos(request):
     usuario_id = request.session.get('usuario_id')
@@ -609,7 +608,7 @@ def calendario_suenos(request):
     for sueno in suenos:
         eventos.append({
             'id': sueno.id,
-            'title': sueno.usuario.username,  # Solo el username
+            'title': sueno.usuario.username,
             'start': sueno.fecha_creacion.isoformat()
         })
 
@@ -617,4 +616,25 @@ def calendario_suenos(request):
         'usuario': admin,
         'eventos_json': json.dumps(eventos)
     })
+
+
+# NUEVA FUNCIÓN: Visualizar/editar un sueño desde el calendario
+def verSueno(request, id):
+    sueno = get_object_or_404(Sueno, id=id)
+    usuarios = Usuario.objects.all()
+
+    if request.method == 'POST':
+        sueno.usuario_id = request.POST.get('usuario')
+        sueno.titulo = request.POST.get('titulo')
+        sueno.descripcion = request.POST.get('descripcion')
+        sueno.fecha_creacion = request.POST.get('fecha_creacion')
+        sueno.save()
+        messages.success(request, "Sueño actualizado correctamente.")
+        return redirect('calendario_suenos')
+
+    return render(request, 'admin/calendario/verSueno.html', {
+        'sueno': sueno,
+        'usuarios': usuarios
+    })
+
 
